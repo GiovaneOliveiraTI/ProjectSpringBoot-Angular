@@ -50,9 +50,7 @@ appCliente.controller("clienteController", function($scope, $http) {
 
 	});
 
-		
-		
-		
+	
 	}
 	
 	$scope.alterarClientes = function(cli){
