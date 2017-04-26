@@ -1,10 +1,12 @@
 package br.com.fabricadev.ws.controller;
 
 import java.util.Collection;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,49 +19,54 @@ import br.com.fabricadev.ws.service.ClienteService;
 
 @RestController
 public class ClienteController {
-	
+
 	@Autowired
 	ClienteService clienteService;
-
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/clientes", consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-	private ResponseEntity<Cliente> cadastrarCliente(@RequestBody Cliente cliente) {
+	// End points
+	@RequestMapping(method = RequestMethod.POST, value = "/clientes", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Cliente> cadastrarCliente(@RequestBody Cliente cliente) {
 
 		Cliente clienteCadastrado = clienteService.cadastrar(cliente);
-
-		return new ResponseEntity<Cliente>(clienteCadastrado, org.springframework.http.HttpStatus.CREATED);
-
+		return new ResponseEntity<>(clienteCadastrado, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/clientes", produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-	private ResponseEntity<Collection<Cliente>> buscarTodosCliente() {
+	@RequestMapping(method = RequestMethod.GET, value = "/clientes", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Collection<Cliente>> buscarTodosClientes() {
 
-		Collection<Cliente> clientesbuscados = clienteService.buscarTodos();
+		Collection<Cliente> clientesBuscados = clienteService.buscarTodos();
 
-		return new ResponseEntity<>(clientesbuscados, org.springframework.http.HttpStatus.OK);
-
+		return new ResponseEntity<>(clientesBuscados, HttpStatus.OK);
 	}
-	@RequestMapping(method = RequestMethod.DELETE, value = "/clientes{id}")
-	private ResponseEntity<Cliente> excluirCliente(@PathVariable Integer id) {
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/clientes/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Integer id) {
 
-		Cliente clienteEncontrado = clienteService.buscarPorId(id);
+		Cliente cliente = clienteService.buscarPorId(id);
+
+		return new ResponseEntity<>(cliente, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, value = "/clientes/{id}" )
+	public ResponseEntity<Cliente> excluirCliente(@PathVariable Integer id) {
 		
-		if(clienteEncontrado==null){
-			
-			return new ResponseEntity<> (HttpStatus.NOT_FOUND);	
-			
+		Cliente clienteEncontrado = clienteService.buscarPorId(id);
+		if (clienteEncontrado==null){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		
 		clienteService.excluir(clienteEncontrado);
+		return new ResponseEntity<>( HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/clientes", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Cliente> alterarCliente(@RequestBody Cliente cliente) {
 
-		return new ResponseEntity<Cliente>(org.springframework.http.HttpStatus.OK);
-
+		Cliente clienteAlterado = clienteService.alterar(cliente);
+		return new ResponseEntity<>(clienteAlterado, HttpStatus.OK);
 	}
 
 
-
-	 Cliente buscarPorId(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }
